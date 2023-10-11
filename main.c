@@ -77,7 +77,8 @@ int main() {
         render(deltaSecs);
 
         loopEnd = SDL_GetTicks();
-        SDL_Delay(FRAME_TIME - (loopEnd - loopStart));
+        int waitTime = FRAME_TIME - (loopEnd - loopStart);
+        if (waitTime > 0) SDL_Delay(waitTime);
     }
 
     cleanSDL();
