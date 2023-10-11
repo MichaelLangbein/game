@@ -4,6 +4,7 @@
 
 LlNode* Ll_create(void* val) {
     LlNode* node = malloc(sizeof(LlNode));
+    node->next = NULL;
     node->data = val;
     return node;
 }
