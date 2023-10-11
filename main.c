@@ -14,7 +14,7 @@ void initSDL() {
         exit(1);
     }
 
-    window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0);
+    window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     if (!window) {
         printf("Failed to init window: %s\n", SDL_GetError());
         exit(1);
@@ -50,7 +50,7 @@ void handleEvents() {
     }
 }
 
-void render() {
+void render(float deltaSecs) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
@@ -66,9 +66,18 @@ void render() {
 int main() {
     initSDL();
 
+    int loopStart = 0;
+    int loopEnd = 0;
+    float deltaSecs = 0.0;
     while (running == 1) {
+        deltaSecs = (SDL_GetTicks() - loopEnd) / 1000;
+        loopStart = SDL_GetTicks();
+
         handleEvents();
-        render();       
+        render(deltaSecs);
+
+        loopEnd = SDL_GetTicks();
+        SDL_Delay(FRAME_TIME - (loopEnd - loopStart));
     }
 
     cleanSDL();
