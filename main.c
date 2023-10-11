@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "./config.h"
+// #include "./utils/utils.h"
 
 
 SDL_Window* window;
@@ -54,7 +55,6 @@ void render(float deltaSecs) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
-    // SDL_SetRenderDrawColor(renderer, 125, 76, 76, SDL_ALPHA_OPAQUE);
     SDL_Rect rect = { 100, 100, 50, 50 };
     SDL_SetRenderDrawColor(renderer, 125, 50, 50, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &rect);
@@ -64,6 +64,7 @@ void render(float deltaSecs) {
 }
 
 int main() {
+
     initSDL();
 
     int loopStart = 0;
