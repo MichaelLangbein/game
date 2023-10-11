@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "./config.h"
-// #include "./utils/utils.h"
+#include "./utils/utils.h"
+
 
 
 SDL_Window* window;

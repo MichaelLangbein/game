@@ -10,7 +10,7 @@ struct LlNode {
 
 LlNode* Ll_create(void* val);
 
-void Ll_clean(LlNode* startNode);
+void Ll_clean(LlNode* startNode, int includeData);
 
 LlNode* Ll_last(LlNode* startNode);
 

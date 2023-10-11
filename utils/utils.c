@@ -9,9 +9,12 @@ LlNode* Ll_create(void* val) {
     return node;
 }
 
-void Ll_clean(LlNode* startNode) {
+void Ll_clean(LlNode* startNode, int includeData) {
     if (startNode->next != NULL) {
-        Ll_clean(startNode->next);
+        Ll_clean(startNode->next, includeData);
+    }
+    if (includeData > 0) {
+        free(startNode->data);
     }
     free(startNode);
 }

@@ -27,6 +27,7 @@ main: main.o utils.o
 
 clean:
 	rm *.o
+	rm *.test
 
 run: main
 	./main
@@ -34,4 +35,4 @@ run: main
 valgrind: main
 	valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=val.log ./main
 
-all: main clean
+all: main clean run

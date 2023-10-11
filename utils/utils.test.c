@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "./utils.h"
 
-int main() {
+void testWithInts() {
 
     // Ll is designed to hold arbitrary data.
     // For that, its data is stored as a void*.
@@ -22,7 +22,38 @@ int main() {
         current = current->next;
     }
 
-    Ll_clean(ll);
+    Ll_clean(ll, 0);
+}
+
+
+typedef struct Entity {
+    char* name;
+} Entity;
+
+Entity* createEntity(char* name) {
+    Entity* entity = malloc(sizeof(Entity));
+    entity->name = name;
+    return entity;
+}
+
+void testWithStructs() {
+    Entity* player = createEntity("player");
+    Entity* ball = createEntity("ball");
+    LlNode* ll = Ll_create(player);
+    Ll_append(ll, ball);
+    Ll_clean(ll, 1);
+
+    // No need to free data: already freed in Ll_clean.
+    // free(player);
+    // free(ball);
+}
+
+int main() {
+
+    testWithInts();
+    testWithStructs();
+
+
     
     return 0;
 }
