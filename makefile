@@ -11,19 +11,19 @@ WARNINGS = -Wall -Wextra
 # 	-o: object-file: name der fertigen binary
 # 	-g: fuer debugger
 
-utils.o: utils/utils.c
-	gcc -g -c $(WARNINGS) $(INCLUDES) utils/utils.c
+datastructs.o: datastructs/datastructs.c
+	gcc -g -c $(WARNINGS) $(INCLUDES) datastructs/datastructs.c
 
-utils.test: utils/utils.test.c utils.o
-	gcc -g -c $(WARNINGS) $(INCLUDES) utils/utils.test.c
-	gcc -g -o utils.test utils.test.o utils.o $(LIBS)
-	valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=utils.test.log ./utils.test
+datastructs.test: datastructs/datastructs.test.c datastructs.o
+	gcc -g -c $(WARNINGS) $(INCLUDES) datastructs/datastructs.test.c
+	gcc -g -o datastructs.test datastructs.test.o datastructs.o $(LIBS)
+	valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=datastructs.test.log ./datastructs.test
 
 main.o: main.c
 	gcc -g -c $(WARNINGS) $(INCLUDES) main.c
 
-main: main.o utils.o
-	gcc -g -o main main.o utils.o $(LIBS)
+main: main.o datastructs.o
+	gcc -g -o main main.o datastructs.o $(LIBS)
 
 clean:
 	rm *.o

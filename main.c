@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "./config.h"
-#include "./utils/utils.h"
+#include "./datastructs/datastructs.h"
 
 
 

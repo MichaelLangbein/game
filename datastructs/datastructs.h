@@ -1,5 +1,5 @@
-#ifndef UTILS_HEADER
-#define UTILS_HEADER
+#ifndef datastructs_HEADER
+#define datastructs_HEADER
 
 
 typedef struct LlNode LlNode;

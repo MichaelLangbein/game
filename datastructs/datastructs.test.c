@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "./utils.h"
+#include "./datastructs.h"
 
 void testWithInts() {
 
