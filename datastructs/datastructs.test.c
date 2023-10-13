@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "./datastructs.h"
 
-void testWithInts() {
+void Ll_testWithInts() {
 
     // Ll is designed to hold arbitrary data.
     // For that, its data is stored as a void*.
@@ -36,7 +36,7 @@ Entity* createEntity(char* name) {
     return entity;
 }
 
-void testWithStructs() {
+void Ll_testWithStructs() {
     Entity* player = createEntity("player");
     Entity* ball = createEntity("ball");
     LlNode* ll = Ll_create(player);
@@ -48,11 +48,31 @@ void testWithStructs() {
     // free(ball);
 }
 
+void Q_test() {
+    Entity* a = createEntity("Andy");
+    Entity* b = createEntity("Babs");
+    Entity* c = createEntity("Charles");
+
+    Queue* queue = Queue_create(a);
+    Queue_push(queue, b);
+    Queue_push(queue, c);
+
+    Entity* retrieved = Queue_pop(queue);
+    printf("Retrieved from queue: %s\n", retrieved->name);
+
+    Entity* retrieved2 = Queue_pop(queue);
+    printf("Retrieved from queue: %s\n", retrieved2->name);
+
+    Queue_clean(queue, 1);
+    free(c);
+    free(b);
+}
+
 int main() {
 
-    testWithInts();
-    testWithStructs();
-
+    Ll_testWithInts();
+    Ll_testWithStructs();
+    Q_test();
 
     
     return 0;

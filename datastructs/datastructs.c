@@ -79,36 +79,24 @@ LlNode* Ll_shift(LlNode* startNode) {
 
 
 
-Queue* Queue_create(int capacity) {
+Queue* Queue_create(void* datum) {
     Queue* queue = malloc(sizeof(Queue));
-    queue->capacity = capacity;
-    queue->start = 0;
-    queue->end = 0;
-    queue->data = malloc(capacity * sizeof(void*));
+    queue->data = Ll_create(datum);
     return queue;
 }
 
-int Queue_push(Queue* queue, void* datum) {
-    int newEnd = (queue->end + 1) % queue->capacity;
-    if (newEnd == queue->start) return -1;
-    queue->end = newEnd;
-    queue->data[queue->end] = datum;
-    return queue->end;
+void Queue_push(Queue* queue, void* datum) {
+    Ll_append(queue->data, datum);
 }
 
 void* Queue_pop(Queue* queue) {
-    void* datum = queue->data[queue->start];
-    int newStart = (queue->start + 1) % queue->capacity;
-    queue->start += newStart;
+    void* datum = queue->data;
+    void* newStart = Ll_shift(queue->data);
+    queue->data = newStart;
     return datum;
 }
 
 void Queue_clean(Queue* queue, int includeData) {
-    if (includeData > 0) {
-        for (int i = 0; i < queue->capacity; i++) {
-            free(queue->data[i]);
-        }
-    }
-    free(queue->data);
+    Ll_clean(queue->data, includeData);
     free(queue);
 }

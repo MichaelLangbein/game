@@ -29,15 +29,12 @@ LlNode* Ll_shift(LlNode* startNode);
 
 
 typedef struct Queue {
-    int capacity;
-    int start;
-    int end;
-    void* data[];
+    LlNode* data;
 } Queue;
 
-Queue* Queue_create(int capacity);
+Queue* Queue_create(void* datum);
 
-int Queue_push(Queue* queue, void* datum);
+void Queue_push(Queue* queue, void* datum);
 
 void* Queue_pop(Queue* queue);
 

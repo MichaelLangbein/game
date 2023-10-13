@@ -26,8 +26,9 @@ main: main.o datastructs.o
 	gcc -g -o main main.o datastructs.o $(LIBS)
 
 clean:
-	rm *.o
-	rm *.test
+	rm -r *.o
+	rm -r *.test
+	rm -r *.log
 
 run: main
 	./main
