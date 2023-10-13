@@ -9,15 +9,21 @@ typedef struct RenderComponent {
     char* texture;
 } RenderComponent;
 
-typedef struct PhysicsComponent {
+typedef struct PositionComponent {
     int pos_x;
     int pos_y;
+    int width;
+    int height;
+} PositionComponent;
+
+typedef struct MotionComponent {
     int vel_x;
     int vel_y;
-} PhysicsComponent;
+} MotionComponent;
 
 typedef struct Components {
-    PhysicsComponent* physics;
+    PositionComponent* position;
+    MotionComponent* motion;
     RenderComponent* render;
 } Components;
 
@@ -27,14 +33,22 @@ typedef struct Entity {
 } Entity;
 
 void physicsSystem(Entity* entity, float deltaSecs) {
-    if (!entity->components->physics) return;
-    entity->components->physics->pos_x += deltaSecs * entity->components->physics->vel_x;
-    entity->components->physics->pos_y += deltaSecs * entity->components->physics->vel_y;
+    if (!entity->components->position || !entity->components->motion) return;
+    entity->components->position->pos_x += deltaSecs * entity->components->motion->vel_x;
+    entity->components->position->pos_y += deltaSecs * entity->components->motion->vel_y;
 }
 
 void renderSystem(Entity* entity, float deltaSecs) {
-    if (!entity->components->render) return;
-    // @TODO: some SDL stuff here
+    if (!entity->components->render || !entity->components->position) return;
+
+    SLD_Texture* texture = textureCache(entity);
+    SLD_Rect textureRect = { 
+        entity->components->position->pos_x,
+        entity->components->position->pos_y,
+        entity->components->position->width,
+        entity->components->position->height,
+    };
+    SDL_RenderCopy(renderer, texture, &textureRect, NULL);
 }
 
 
@@ -90,9 +104,12 @@ void render(float deltaSecs) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
-    SDL_Rect rect = { 100, 100, 50, 50 };
-    SDL_SetRenderDrawColor(renderer, 125, 50, 50, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(renderer, &rect);
+    // for (const entity of entities) {
+    //     renderSystem(entity, deltaSecs);
+    // }
+    // SDL_Rect rect = { 100, 100, 50, 50 };
+    // SDL_SetRenderDrawColor(renderer, 125, 50, 50, SDL_ALPHA_OPAQUE);
+    // SDL_RenderFillRect(renderer, &rect);
 
     // swaps front- and back-buffer
     SDL_RenderPresent(renderer); 
