@@ -48,6 +48,32 @@ LlNode* Ll_append(LlNode* startNode, void* newVal) {
 }
 
 
+// removes one (potentially middle) entry from list,
+// connects left and right again.
+// returns the node to the *right* of the removed node.
+LlNode* Ll_splice(LlNode* node) {
+    if (node->prev) {
+        node->prev->next = NULL;
+    }
+    if (node->next) {
+        node->next->prev = NULL;
+    }
+    if (node->prev && node->next) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    return node->next;
+}
+
+// removes start-entry from list,
+// returns ref to new start
+LlNode* Ll_shift(LlNode* startNode) {
+    LlNode* first = Ll_first(startNode);
+    LlNode* startAfterShift = Ll_splice(first);
+    return startAfterShift;
+}
+
+
 typedef struct Queue {
     int capacity;
     int start;

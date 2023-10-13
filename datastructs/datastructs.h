@@ -19,5 +19,9 @@ LlNode* Ll_first(LlNode* startNode);
 
 LlNode* Ll_append(LlNode* startNode, void* newVal);
 
+LlNode* Ll_splice(LlNode* node);
+
+LlNode* Ll_shift(LlNode* startNode);
+
 
 #endif
