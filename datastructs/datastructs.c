@@ -44,13 +44,15 @@ LlNode* Ll_append(LlNode* startNode, void* newVal) {
     LlNode* newNode = Ll_create(newVal);
     LlNode* lastNode = Ll_last(startNode);
     lastNode->next = newNode;
+    newNode->prev = lastNode;
     return newNode;
 }
 
 
-// removes one (potentially middle) entry from list,
+// Removes one (potentially middle) entry from list,
 // connects left and right again.
-// returns the node to the *right* of the removed node.
+// Returns the node to the *right* of the removed node.
+// The LlNode is free'd in the process.
 LlNode* Ll_splice(LlNode* node) {
     if (node->prev) {
         node->prev->next = NULL;
@@ -62,11 +64,14 @@ LlNode* Ll_splice(LlNode* node) {
         node->prev->next = node->next;
         node->next->prev = node->prev;
     }
-    return node->next;
+    LlNode* next = node->next;
+    free(node);
+    return next;
 }
 
-// removes start-entry from list,
-// returns ref to new start
+// Removes start-entry from list,
+// returns ref to new start.
+// The LlNode is free'd in the process.
 LlNode* Ll_shift(LlNode* startNode) {
     LlNode* first = Ll_first(startNode);
     LlNode* startAfterShift = Ll_splice(first);
@@ -90,8 +95,9 @@ void Queue_push(Queue* queue, void* datum) {
 }
 
 void* Queue_pop(Queue* queue) {
-    void* datum = queue->data;
-    void* newStart = Ll_shift(queue->data);
+    LlNode* node = queue->data;
+    void* datum = node->data;
+    void* newStart = Ll_shift(node);
     queue->data = newStart;
     return datum;
 }

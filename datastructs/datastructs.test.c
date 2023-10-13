@@ -64,8 +64,11 @@ void Q_test() {
     printf("Retrieved from queue: %s\n", retrieved2->name);
 
     Queue_clean(queue, 1);
-    free(c);
-    free(b);
+    // queue could only clean those items still known to it.
+    // all others must be free'd here.
+    free(retrieved2);
+    free(retrieved);
+    // free(a);
 }
 
 int main() {
