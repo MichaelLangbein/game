@@ -5,10 +5,15 @@
 LlNode* Ll_create(void* val) {
     LlNode* node = malloc(sizeof(LlNode));
     node->next = NULL;
+    node->prev = NULL;
     node->data = val;
     return node;
 }
 
+/**
+ * Cleans only from the current node downstream,
+ * not upstream.
+*/
 void Ll_clean(LlNode* startNode, int includeData) {
     if (startNode->next != NULL) {
         Ll_clean(startNode->next, includeData);
@@ -22,6 +27,14 @@ void Ll_clean(LlNode* startNode, int includeData) {
 LlNode* Ll_last(LlNode* startNode) {
     LlNode* currentNode = startNode;
     while (currentNode->next != NULL) {
+        currentNode = currentNode->next;
+    }
+    return currentNode;
+}
+
+LlNode* Ll_first(LlNode* startNode) {
+    LlNode* currentNode = startNode;
+    while (currentNode->prev != NULL) {
         currentNode = currentNode->next;
     }
     return currentNode;

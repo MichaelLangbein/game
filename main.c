@@ -5,6 +5,40 @@
 #include "./datastructs/datastructs.h"
 
 
+typedef struct RenderComponent {
+    char* texture;
+} RenderComponent;
+
+typedef struct PhysicsComponent {
+    int pos_x;
+    int pos_y;
+    int vel_x;
+    int vel_y;
+} PhysicsComponent;
+
+typedef struct Components {
+    PhysicsComponent* physics;
+    RenderComponent* render;
+} Components;
+
+typedef struct Entity {
+    int id;
+    Components* components;
+} Entity;
+
+void physicsSystem(Entity* entity, float deltaSecs) {
+    if (!entity->components->physics) return;
+    entity->components->physics->pos_x += deltaSecs * entity->components->physics->vel_x;
+    entity->components->physics->pos_y += deltaSecs * entity->components->physics->vel_y;
+}
+
+void renderSystem(Entity* entity, float deltaSecs) {
+    if (!entity->components->render) return;
+    // @TODO: some SDL stuff here
+}
+
+
+
 
 SDL_Window* window;
 SDL_Renderer* renderer;
