@@ -1,6 +1,6 @@
 # Includes are header files without a concrete implementation.
 INCLUDES = -I/usr/include/SDL2 -D_REENTRANT
-# Libraries are object files. -L adds a directory of libraries, -l adds a single library. 
+# Libraries are object files. -L adds a directory of libraries, -l adds a single library. User -l:SDL2 (note the :) to link statically.
 LIBS = -lSDL2
 WARNINGS = -Wall -Wextra
 
