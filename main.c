@@ -1,12 +1,49 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "./config.h"
 #include "./datastructs/datastructs.h"
 
 
+
+
+
+
+
+SDL_Window* window;
+SDL_Renderer* renderer;
+int running = 1;
+
+
+
+#define TEXTURE_SHIP 1
+SDL_Texture* shipTexture; 
+
+void initTextureCache() {
+    shipTexture = IMG_LoadTexture(renderer, "./assets/textures/ship.png");
+}
+
+void cleanTextureCache() {
+    SDL_DestroyTexture(shipTexture);
+}
+
+SDL_Texture* textureCache(int textureId) {
+    switch (textureId) {
+    case TEXTURE_SHIP:
+        return shipTexture;
+    default:
+        printf("No such texture %d \n", textureId);
+        return NULL;
+    }
+}
+
+
+
+
+
 typedef struct RenderComponent {
-    char* texture;
+    int textureId;
 } RenderComponent;
 
 typedef struct PositionComponent {
@@ -27,10 +64,54 @@ typedef struct Components {
     RenderComponent* render;
 } Components;
 
+Components* Components_create() {
+    Components* c = malloc(sizeof(Components));
+    c->motion = NULL;
+    c->position = NULL;
+    c->render = NULL;
+}
+
+void Components_clear(Components* c) {
+    if (c->motion) free(c->motion);
+    if (c->position) free(c->position);
+    if (c->render) free(c->render);
+    free(c);
+}
+
 typedef struct Entity {
     int id;
     Components* components;
 } Entity;
+
+int entityCount = 0;
+
+Entity* Entity_create() {
+    entityCount += 1;
+    Entity* e = malloc(sizeof(Entity));
+    e->id = entityCount;
+    e->components = Components_create();
+    return e;
+}
+
+void Entity_addPosition(Entity* e, int x, int y, int width, int height) {
+    PositionComponent* pos = malloc(sizeof(PositionComponent));
+    pos->pos_x = x;
+    pos->pos_y = y;
+    pos->width = width;
+    pos->height = height;
+    e->components->position = pos;
+}
+
+void Entity_addRender(Entity* e, int textureId) {
+    RenderComponent* r = malloc(sizeof(RenderComponent));
+    r->textureId = textureId;
+    e->components->render = r;
+}
+
+void Entity_free(Entity* e) {
+    Components_clear(e->components);
+    free(e);
+}
 
 void physicsSystem(Entity* entity, float deltaSecs) {
     if (!entity->components->position || !entity->components->motion) return;
@@ -41,8 +122,8 @@ void physicsSystem(Entity* entity, float deltaSecs) {
 void renderSystem(Entity* entity, float deltaSecs) {
     if (!entity->components->render || !entity->components->position) return;
 
-    SLD_Texture* texture = textureCache(entity->components->render);
-    SLD_Rect textureRect = { 
+    SDL_Texture* texture = textureCache(entity->components->render->textureId);
+    SDL_Rect textureRect = { 
         entity->components->position->pos_x,
         entity->components->position->pos_y,
         entity->components->position->width,
@@ -53,10 +134,17 @@ void renderSystem(Entity* entity, float deltaSecs) {
 
 
 
+Entity* entities[1];
+void initEntities() {
+    Entity* player = Entity_create();
+    Entity_addPosition(player, 100, 100, 100, 100);
+    Entity_addRender(player, TEXTURE_SHIP);
+    entities[0] = player;
+}
 
-SDL_Window* window;
-SDL_Renderer* renderer;
-int running = 1;
+
+
+
 
 void initSDL() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -100,16 +188,19 @@ void handleEvents() {
     }
 }
 
+void update(float deltaSecs) {
+    for (int i = 0; i < entityCount; i++) {
+        physicsSystem(entities[i], deltaSecs);
+    }
+}
+
 void render(float deltaSecs) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
-    // for (const entity of entities) {
-    //     renderSystem(entity, deltaSecs);
-    // }
-    // SDL_Rect rect = { 100, 100, 50, 50 };
-    // SDL_SetRenderDrawColor(renderer, 125, 50, 50, SDL_ALPHA_OPAQUE);
-    // SDL_RenderFillRect(renderer, &rect);
+    for (int i = 0; i < entityCount; i++) {
+        renderSystem(entities[i], deltaSecs);
+    }
 
     // swaps front- and back-buffer
     SDL_RenderPresent(renderer); 
@@ -118,6 +209,8 @@ void render(float deltaSecs) {
 int main() {
 
     initSDL();
+    initTextureCache();
+    initEntities();
 
     int loopStart = 0;
     int loopEnd = 0;
@@ -127,6 +220,7 @@ int main() {
         loopStart = SDL_GetTicks();
 
         handleEvents();
+        update(deltaSecs);
         render(deltaSecs);
 
         loopEnd = SDL_GetTicks();
@@ -135,6 +229,7 @@ int main() {
     }
 
     cleanSDL();
+    cleanTextureCache();
 
     return 0;
 }
