@@ -41,7 +41,7 @@ void physicsSystem(Entity* entity, float deltaSecs) {
 void renderSystem(Entity* entity, float deltaSecs) {
     if (!entity->components->render || !entity->components->position) return;
 
-    SLD_Texture* texture = textureCache(entity);
+    SLD_Texture* texture = textureCache(entity->components->render);
     SLD_Rect textureRect = { 
         entity->components->position->pos_x,
         entity->components->position->pos_y,

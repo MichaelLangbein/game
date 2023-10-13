@@ -24,4 +24,29 @@ LlNode* Ll_splice(LlNode* node);
 LlNode* Ll_shift(LlNode* startNode);
 
 
+
+
+
+
+typedef struct Queue {
+    int capacity;
+    int start;
+    int end;
+    void* data[];
+} Queue;
+
+Queue* Queue_create(int capacity);
+
+int Queue_push(Queue* queue, void* datum);
+
+void* Queue_pop(Queue* queue);
+
+void Queue_clean(Queue* queue, int includeData);
+
+
+
+
+
+
+
 #endif

@@ -74,12 +74,10 @@ LlNode* Ll_shift(LlNode* startNode) {
 }
 
 
-typedef struct Queue {
-    int capacity;
-    int start;
-    int end;
-    void* data;
-} Queue;
+
+
+
+
 
 Queue* Queue_create(int capacity) {
     Queue* queue = malloc(sizeof(Queue));
@@ -91,14 +89,17 @@ Queue* Queue_create(int capacity) {
 }
 
 int Queue_push(Queue* queue, void* datum) {
-    queue->end += 1;
+    int newEnd = (queue->end + 1) % queue->capacity;
+    if (newEnd == queue->start) return -1;
+    queue->end = newEnd;
     queue->data[queue->end] = datum;
     return queue->end;
 }
 
 void* Queue_pop(Queue* queue) {
     void* datum = queue->data[queue->start];
-    queue->start += 1;
+    int newStart = (queue->start + 1) % queue->capacity;
+    queue->start += newStart;
     return datum;
 }
 
