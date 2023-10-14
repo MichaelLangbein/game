@@ -20,7 +20,7 @@ int running = 1;
 SDL_Texture* shipTexture; 
 
 void initTextures() {
-    shipTexture = IMG_LoadTexture(renderer, "assets/textures/ship.png");
+    shipTexture = IMG_LoadTexture(renderer, "/home/michael/Desktop/code/game/assets/textures/ship.png");
 }
 
 void cleanTextures() {
@@ -30,8 +30,8 @@ void cleanTextures() {
 
 
 typedef struct PositionComponent {
-    int pos_x;
-    int pos_y;
+    float pos_x;
+    float pos_y;
     int width;
     int height;
 } PositionComponent;
@@ -47,7 +47,7 @@ typedef struct RenderComponent {
 
 
 
-#define NR_ENTITIES 10
+#define NR_ENTITIES 1
 #define ID_PLAYER 0
 
 PositionComponent positionComponents[NR_ENTITIES];
@@ -63,7 +63,7 @@ void initComponents() {
     }
 
     positionComponents[ID_PLAYER] = (PositionComponent) { 100, 100, 100, 100 };
-    motionComponents[ID_PLAYER]   = (MotionComponent)   { 0, 0 };
+    motionComponents[ID_PLAYER]   = (MotionComponent)   { 10, 10 };
     renderComponents[ID_PLAYER]   = (RenderComponent)   { shipTexture };
 }
 
@@ -74,16 +74,15 @@ void physicsSystem(int id, float deltaSecs) {
 
 void renderSystem(int id, float deltaSecs) {
     if (renderComponents[id].texture == NULL) return;
-    printf("delta: %.3f \n", deltaSecs);
 
     SDL_Texture* texture = renderComponents[id].texture;
-    SDL_Rect textureRect = { 
+    SDL_Rect destinationRect = { 
         positionComponents[id].pos_x,
         positionComponents[id].pos_y,
         positionComponents[id].width,
         positionComponents[id].height,
     };
-    SDL_RenderCopy(renderer, texture, &textureRect, NULL);
+    SDL_RenderCopy(renderer, texture, NULL, &destinationRect);
 }
 
 
