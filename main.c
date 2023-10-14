@@ -17,34 +17,17 @@ int running = 1;
 
 
 
-#define TEXTURE_SHIP 1
 SDL_Texture* shipTexture; 
 
-void initTextureCache() {
-    shipTexture = IMG_LoadTexture(renderer, "./assets/textures/ship.png");
+void initTextures() {
+    shipTexture = IMG_LoadTexture(renderer, "assets/textures/ship.png");
 }
 
-void cleanTextureCache() {
+void cleanTextures() {
     SDL_DestroyTexture(shipTexture);
 }
 
-SDL_Texture* textureCache(int textureId) {
-    switch (textureId) {
-    case TEXTURE_SHIP:
-        return shipTexture;
-    default:
-        printf("No such texture %d \n", textureId);
-        return NULL;
-    }
-}
 
-
-
-
-
-typedef struct RenderComponent {
-    int textureId;
-} RenderComponent;
 
 typedef struct PositionComponent {
     int pos_x;
@@ -58,90 +41,50 @@ typedef struct MotionComponent {
     int vel_y;
 } MotionComponent;
 
-typedef struct Components {
-    PositionComponent* position;
-    MotionComponent* motion;
-    RenderComponent* render;
-} Components;
+typedef struct RenderComponent {
+    SDL_Texture* texture;
+} RenderComponent;
 
-Components* Components_create() {
-    Components* c = malloc(sizeof(Components));
-    c->motion = NULL;
-    c->position = NULL;
-    c->render = NULL;
+
+
+#define NR_ENTITIES 10
+#define ID_PLAYER 0
+
+PositionComponent positionComponents[NR_ENTITIES];
+MotionComponent motionComponents[NR_ENTITIES];
+RenderComponent renderComponents[NR_ENTITIES];
+
+
+void initComponents() {
+    for (int i = 0; i < NR_ENTITIES; i++) {
+        positionComponents[i] = (PositionComponent) { 0, 0, 0, 0 };
+        motionComponents[i]   = (MotionComponent)   { 0, 0 };
+        renderComponents[i]   = (RenderComponent)   { NULL };
+    }
+
+    positionComponents[ID_PLAYER] = (PositionComponent) { 100, 100, 100, 100 };
+    motionComponents[ID_PLAYER]   = (MotionComponent)   { 0, 0 };
+    renderComponents[ID_PLAYER]   = (RenderComponent)   { shipTexture };
 }
 
-void Components_clear(Components* c) {
-    if (c->motion) free(c->motion);
-    if (c->position) free(c->position);
-    if (c->render) free(c->render);
-    free(c);
+void physicsSystem(int id, float deltaSecs) {
+    positionComponents[id].pos_x += deltaSecs * motionComponents[id].vel_x;
+    positionComponents[id].pos_y += deltaSecs * motionComponents[id].vel_y;
 }
 
-typedef struct Entity {
-    int id;
-    Components* components;
-} Entity;
+void renderSystem(int id, float deltaSecs) {
+    if (renderComponents[id].texture == NULL) return;
+    printf("delta: %.3f \n", deltaSecs);
 
-int entityCount = 0;
-
-Entity* Entity_create() {
-    entityCount += 1;
-    Entity* e = malloc(sizeof(Entity));
-    e->id = entityCount;
-    e->components = Components_create();
-    return e;
-}
-
-void Entity_addPosition(Entity* e, int x, int y, int width, int height) {
-    PositionComponent* pos = malloc(sizeof(PositionComponent));
-    pos->pos_x = x;
-    pos->pos_y = y;
-    pos->width = width;
-    pos->height = height;
-    e->components->position = pos;
-}
-
-void Entity_addRender(Entity* e, int textureId) {
-    RenderComponent* r = malloc(sizeof(RenderComponent));
-    r->textureId = textureId;
-    e->components->render = r;
-}
-
-void Entity_free(Entity* e) {
-    Components_clear(e->components);
-    free(e);
-}
-
-void physicsSystem(Entity* entity, float deltaSecs) {
-    if (!entity->components->position || !entity->components->motion) return;
-    entity->components->position->pos_x += deltaSecs * entity->components->motion->vel_x;
-    entity->components->position->pos_y += deltaSecs * entity->components->motion->vel_y;
-}
-
-void renderSystem(Entity* entity, float deltaSecs) {
-    if (!entity->components->render || !entity->components->position) return;
-
-    SDL_Texture* texture = textureCache(entity->components->render->textureId);
+    SDL_Texture* texture = renderComponents[id].texture;
     SDL_Rect textureRect = { 
-        entity->components->position->pos_x,
-        entity->components->position->pos_y,
-        entity->components->position->width,
-        entity->components->position->height,
+        positionComponents[id].pos_x,
+        positionComponents[id].pos_y,
+        positionComponents[id].width,
+        positionComponents[id].height,
     };
     SDL_RenderCopy(renderer, texture, &textureRect, NULL);
 }
-
-
-
-Entity* entities[1];
-void initEntities() {
-    Entity* player = Entity_create();
-    Entity_addPosition(player, 100, 100, 100, 100);
-    Entity_addRender(player, TEXTURE_SHIP);
-    entities[0] = player;
-}
-
 
 
 
@@ -189,8 +132,8 @@ void handleEvents() {
 }
 
 void update(float deltaSecs) {
-    for (int i = 0; i < entityCount; i++) {
-        physicsSystem(entities[i], deltaSecs);
+    for (int i = 0; i < NR_ENTITIES; i++) {
+        physicsSystem(i, deltaSecs);
     }
 }
 
@@ -198,38 +141,40 @@ void render(float deltaSecs) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
-    for (int i = 0; i < entityCount; i++) {
-        renderSystem(entities[i], deltaSecs);
+    for (int i = 0; i < NR_ENTITIES; i++) {
+        renderSystem(i, deltaSecs);
     }
 
-    // swaps front- and back-buffer
     SDL_RenderPresent(renderer); 
 }
 
 int main() {
 
     initSDL();
-    initTextureCache();
-    initEntities();
+    initTextures();
+    initComponents();
 
     int loopStart = 0;
+    int processingEnd = 0;
     int loopEnd = 0;
-    float deltaSecs = 0.0;
+    float lastLoopSecs = 0.0;
     while (running == 1) {
-        deltaSecs = (SDL_GetTicks() - loopEnd) / 1000;
+        lastLoopSecs = (loopEnd - loopStart) / 1000.0;
         loopStart = SDL_GetTicks();
 
         handleEvents();
-        update(deltaSecs);
-        render(deltaSecs);
+        update(lastLoopSecs);
+        render(lastLoopSecs);
 
-        loopEnd = SDL_GetTicks();
-        int waitTime = FRAME_TIME - (loopEnd - loopStart);
+        processingEnd = SDL_GetTicks();
+
+        int waitTime = FRAME_TIME - (processingEnd - loopStart);
         if (waitTime > 0) SDL_Delay(waitTime);
+        loopEnd = SDL_GetTicks();
     }
 
+    cleanTextures();
     cleanSDL();
-    cleanTextureCache();
 
     return 0;
 }
