@@ -12,6 +12,7 @@
         "utility": "c",
         "sdl_image.h": "c",
         "config.h": "c",
-        "sdl.h": "c"
+        "sdl.h": "c",
+        "datastructs.h": "c"
     }
 }

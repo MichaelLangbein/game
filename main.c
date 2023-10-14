@@ -3,88 +3,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "./config.h"
-#include "./datastructs/datastructs.h"
-
-
-
-
+#include "./ecs/ecs.h"
 
 
 
 SDL_Window* window;
 SDL_Renderer* renderer;
 int running = 1;
-
-
-
-SDL_Texture* shipTexture; 
-
-void initTextures() {
-    shipTexture = IMG_LoadTexture(renderer, "/home/michael/Desktop/code/game/assets/textures/ship.png");
-}
-
-void cleanTextures() {
-    SDL_DestroyTexture(shipTexture);
-}
-
-
-
-typedef struct PositionComponent {
-    float pos_x;
-    float pos_y;
-    int width;
-    int height;
-} PositionComponent;
-
-typedef struct MotionComponent {
-    int vel_x;
-    int vel_y;
-} MotionComponent;
-
-typedef struct RenderComponent {
-    SDL_Texture* texture;
-} RenderComponent;
-
-
-
-#define NR_ENTITIES 1
-#define ID_PLAYER 0
-
-PositionComponent positionComponents[NR_ENTITIES];
-MotionComponent motionComponents[NR_ENTITIES];
-RenderComponent renderComponents[NR_ENTITIES];
-
-
-void initComponents() {
-    for (int i = 0; i < NR_ENTITIES; i++) {
-        positionComponents[i] = (PositionComponent) { 0, 0, 0, 0 };
-        motionComponents[i]   = (MotionComponent)   { 0, 0 };
-        renderComponents[i]   = (RenderComponent)   { NULL };
-    }
-
-    positionComponents[ID_PLAYER] = (PositionComponent) { 100, 100, 100, 100 };
-    motionComponents[ID_PLAYER]   = (MotionComponent)   { 10, 10 };
-    renderComponents[ID_PLAYER]   = (RenderComponent)   { shipTexture };
-}
-
-void physicsSystem(int id, float deltaSecs) {
-    positionComponents[id].pos_x += deltaSecs * motionComponents[id].vel_x;
-    positionComponents[id].pos_y += deltaSecs * motionComponents[id].vel_y;
-}
-
-void renderSystem(int id, float deltaSecs) {
-    if (renderComponents[id].texture == NULL) return;
-
-    SDL_Texture* texture = renderComponents[id].texture;
-    SDL_Rect destinationRect = { 
-        positionComponents[id].pos_x,
-        positionComponents[id].pos_y,
-        positionComponents[id].width,
-        positionComponents[id].height,
-    };
-    SDL_RenderCopy(renderer, texture, NULL, &destinationRect);
-}
-
 
 
 
@@ -141,7 +66,7 @@ void render(float deltaSecs) {
     SDL_RenderClear(renderer);
 
     for (int i = 0; i < NR_ENTITIES; i++) {
-        renderSystem(i, deltaSecs);
+        renderSystem(i, deltaSecs, renderer);
     }
 
     SDL_RenderPresent(renderer); 
@@ -150,7 +75,7 @@ void render(float deltaSecs) {
 int main() {
 
     initSDL();
-    initTextures();
+    initTextures(renderer);
     initComponents();
 
     int loopStart = 0;
