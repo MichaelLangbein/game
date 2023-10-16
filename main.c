@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include "./config.h"
 #include "./ecs/ecs.h"
+#include "./redux/redux.h"
 
 
 
@@ -48,15 +49,16 @@ void handleEvents() {
             running = 0;
             break;
         case SDL_KEYDOWN:
-            // if (event.key.keysym.sym == SDLK_UP) addMessage(queue, MESSAGE_UP);
-            // if (event.key.keysym.sym == SDLK_DOWN) addMessage(queue, MESSAGE_DOWN);
-            // if (event.key.keysym.sym == SDLK_LEFT) addMessage(queue, MESSAGE_LEFT);
-            // if (event.key.keysym.sym == SDLK_RIGHT) addMessage(queue, MESSAGE_RIGHT);
+            if (event.key.keysym.sym == SDLK_UP) Redux_dispatch(queue, REDUX_ACTION_UP);
+            if (event.key.keysym.sym == SDLK_DOWN) Redux_dispatch(queue, REDUX_ACTION_DOWN);
+            if (event.key.keysym.sym == SDLK_LEFT) Redux_dispatch(queue, REDUX_ACTION_LEFT);
+            if (event.key.keysym.sym == SDLK_RIGHT) Redux_dispatch(queue, REDUX_ACTION_RIGHT);
             break;
         default:
             break;
         }
     }
+    Redux_handle();
 }
 
 void update(float deltaSecs) {
@@ -81,6 +83,7 @@ int main() {
     initSDL();
     initTextures(renderer);
     initComponents();
+    Redux_init();
 
     int loopStart = 0;
     int processingEnd = 0;
@@ -101,6 +104,7 @@ int main() {
         loopEnd = SDL_GetTicks();
     }
 
+    Redux_clean();
     cleanTextures();
     cleanSDL();
 

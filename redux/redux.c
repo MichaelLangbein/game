@@ -1,7 +1,5 @@
 #include <stdlib.h>
-
-#define REDUX_ACTION_INCREMENT 1
-#define REDUX_ACTION_DECREMENT 2
+#include "./redux.h"
 
 
 typedef struct Action {
@@ -75,7 +73,7 @@ void Redux_dispatch(int actionType, void* body) {
     addAction(&queue, actionType, body);
 }
 
-void Redux_handle(ActionQueue* queue) {
+void Redux_handle() {
     Action* action;
     while (action = popAction(queue)) {
         Redux_reduce(action, &state);

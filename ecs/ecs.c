@@ -64,3 +64,20 @@ void renderSystem(int id, float deltaSecs, SDL_Renderer* renderer) {
     };
     SDL_RenderCopy(renderer, texture, NULL, &destinationRect);
 }
+
+
+#define ACTION_UP 1
+#define ACTION_RIGHT 2
+#define ACTION_DOWN 3
+#define ACTION_LEFT 4
+void handleAction(int actionId, void* body) {
+    switch (actionId) {
+    case ACTION_UP:
+        motionComponents[ID_PLAYER].
+        break;
+    case ACTION_UP:
+        break;
+    default:
+        break;
+    }
+}
