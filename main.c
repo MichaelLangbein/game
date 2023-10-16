@@ -13,6 +13,7 @@ int running = 1;
 
 
 
+
 void initSDL() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("Failed to init SDL: %s\n", SDL_GetError());
@@ -47,7 +48,10 @@ void handleEvents() {
             running = 0;
             break;
         case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_UP) printf("You pressed the up key. \n");
+            // if (event.key.keysym.sym == SDLK_UP) addMessage(queue, MESSAGE_UP);
+            // if (event.key.keysym.sym == SDLK_DOWN) addMessage(queue, MESSAGE_DOWN);
+            // if (event.key.keysym.sym == SDLK_LEFT) addMessage(queue, MESSAGE_LEFT);
+            // if (event.key.keysym.sym == SDLK_RIGHT) addMessage(queue, MESSAGE_RIGHT);
             break;
         default:
             break;
